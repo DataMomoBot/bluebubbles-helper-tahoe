@@ -15,13 +15,14 @@ jobs:
       - name: Install Pods
         run: |
           cd Messages/MacOS-11+/BlueBubblesHelper
-          pod install --repo-update
+          pod install
 
       - name: Build Dylib
         run: |
-          cd Messages/MacOS-11+/
-          xcodebuild -workspace BlueBubblesHelper.xcworkspace \
-            -scheme "BlueBubblesHelper Dylib" \
+          cd Messages/MacOS-11+/BlueBubblesHelper
+          # Build via project (scheme not in repo), target is BlueBubblesHelper DyLib
+          xcodebuild -project BlueBubblesHelper.xcodeproj \
+            -target "BlueBubblesHelper DyLib" \
             -configuration Release \
             -sdk macosx \
             -arch arm64 \
@@ -29,6 +30,18 @@ jobs:
             CODE_SIGNING_ALLOWED=NO \
             BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
             build
+
+      - name: Find Built Dylib
+        run: |
+          DYLIB=$(find ~/Library/Developer/Xcode/DerivedData -name "BlueBubblesHelper.dylib" \
+            -path "*/Build/Products/*/BlueBubblesHelper.dylib" 2>/dev/null | head -1)
+          echo "Found dylib: $DYLIB"
+          if [ -n "$DYLIB" ]; then
+            mkdir -p build-output
+            cp "$DYLIB" build-output/
+            shasum -a 256 build-output/BlueBubblesHelper.dylib
+          fi
+          ls -la build-output/ 2>/dev/null || echo "No output dir"
 
       - name: Package
         run: |
