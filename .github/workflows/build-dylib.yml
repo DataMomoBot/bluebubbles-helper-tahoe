@@ -19,8 +19,8 @@ jobs:
 
       - name: Build Dylib
         run: |
-          cd Messages/MacOS-11+/BlueBubblesHelper
-          # Build via project (scheme not in repo), target is BlueBubblesHelper DyLib
+          # xcodeproj is at Messages/MacOS-11+/ (parent of BlueBubblesHelper/)
+          cd Messages/MacOS-11+
           xcodebuild -project BlueBubblesHelper.xcodeproj \
             -target "BlueBubblesHelper DyLib" \
             -configuration Release \
@@ -31,17 +31,14 @@ jobs:
             BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
             build
 
-      - name: Find Built Dylib
+      - name: Find & Package Built Dylib
         run: |
+          mkdir -p build-output
           DYLIB=$(find ~/Library/Developer/Xcode/DerivedData -name "BlueBubblesHelper.dylib" \
             -path "*/Build/Products/*/BlueBubblesHelper.dylib" 2>/dev/null | head -1)
-          echo "Found dylib: $DYLIB"
-          if [ -n "$DYLIB" ]; then
-            mkdir -p build-output
-            cp "$DYLIB" build-output/
-            shasum -a 256 build-output/BlueBubblesHelper.dylib
-          fi
-          ls -la build-output/ 2>/dev/null || echo "No output dir"
+          echo "Found: $DYLIB"
+          [ -f "$DYLIB" ] && cp "$DYLIB" build-output/ && shasum -a 256 build-output/BlueBubblesHelper.dylib || echo "Build may have failed - no dylib found"
+          ls -la build-output/
 
       - name: Package
         run: |
