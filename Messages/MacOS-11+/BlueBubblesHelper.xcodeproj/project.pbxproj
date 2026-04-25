@@ -19,24 +19,11 @@
 		A6490A0E2984697C002B0E1D /* PrefixHeader.pch in Resources */ = {isa = PBXBuildFile; fileRef = FBCE4ECD201C0F4D002F8A61 /* PrefixHeader.pch */; };
 		A6490A1D298DC81C002B0E1D /* VettedAliasDictionary.m in Sources */ = {isa = PBXBuildFile; fileRef = A6490A1B298DC81C002B0E1D /* VettedAliasDictionary.m */; };
 		A6490A1F298DCC35002B0E1D /* VettedAliasDictionary.h in Headers */ = {isa = PBXBuildFile; fileRef = A6490A1E298DCC35002B0E1D /* VettedAliasDictionary.h */; };
-		A65C21A72A9AAB1500D6FB7F /* BlueBubblesHelper.dylib in CopyFiles */ = {isa = PBXBuildFile; fileRef = A62991CB29720FAC00B7E663 /* BlueBubblesHelper.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		A69960EA2B1F9A700081FB69 /* FMF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69960E92B1F9A6F0081FB69 /* FMF.framework */; };
+				A69960EA2B1F9A700081FB69 /* FMF.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A69960E92B1F9A6F0081FB69 /* FMF.framework */; };
 		A69960F52B20D89C0081FB69 /* CTBlockDescription.m in Sources */ = {isa = PBXBuildFile; fileRef = A69960F42B20D8860081FB69 /* CTBlockDescription.m */; };
 		F8EA7496D989633D9E36BF1B /* libPods-BlueBubblesHelper DyLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2A31F700CE646BC3B6A3921F /* libPods-BlueBubblesHelper DyLib.a */; };
 /* End PBXBuildFile section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		A65C21A62A9AAAE600D6FB7F /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 12;
-			dstPath = "/Users/<username>/Development/BlueBubbles/bluebubbles-server/packages/server/appResources/private-api/macos11";
-			dstSubfolderSpec = 0;
-			files = (
-				A65C21A72A9AAB1500D6FB7F /* BlueBubblesHelper.dylib in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		2A31F700CE646BC3B6A3921F /* libPods-BlueBubblesHelper DyLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-BlueBubblesHelper DyLib.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -343,8 +330,7 @@
 				A62991C829720FAC00B7E663 /* Sources */,
 				A62991C929720FAC00B7E663 /* Frameworks */,
 				A6490A0D29846973002B0E1D /* Resources */,
-				A65C21A62A9AAAE600D6FB7F /* CopyFiles */,
-				A6490A0F29846A3A002B0E1D /* Run Script */,
+								A6490A0F29846A3A002B0E1D /* Run Script */,
 			);
 			buildRules = (
 			);
