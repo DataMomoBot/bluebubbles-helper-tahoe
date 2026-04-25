@@ -1,0 +1,66 @@
+name: Build BlueBubbles Helper Dylib
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Pods
+        run: |
+          cd Messages/MacOS-11+/BlueBubblesHelper
+          pod install --repo-update
+
+      - name: Build Dylib
+        run: |
+          cd Messages/MacOS-11+/
+          xcodebuild -workspace BlueBubblesHelper.xcworkspace \
+            -scheme "BlueBubblesHelper Dylib" \
+            -configuration Release \
+            -sdk macosx \
+            -arch arm64 \
+            -arch x86_64 \
+            CODE_SIGNING_ALLOWED=NO \
+            BUILD_LIBRARY_FOR_DISTRIBUTION=NO \
+            build
+
+      - name: Package
+        run: |
+          cd Messages/MacOS-11+/BlueBubblesHelper
+          # Create output dir
+          mkdir -p build-output
+          # Copy dylib from build
+          find ~/Library/Developer/Xcode/DerivedData -name "BlueBubblesHelper.dylib" \
+            -path "*/Build/Products/*/BlueBubblesHelper.dylib" \
+            -exec cp {} build-output/ \; 2>/dev/null || true
+          # Also copy from Release build location if exists
+          cp -v build/Release*/BlueBubblesHelper.dylib build-output/ 2>/dev/null || true
+          ls -la build-output/
+          # Generate SHA-256
+          shasum -a 256 build-output/BlueBubblesHelper.dylib
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: BlueBubblesHelper-dylib
+          path: Messages/MacOS-11+/BlueBubblesHelper/build-output/BlueBubblesHelper.dylib
+
+      - name: Create Release
+        if: github.ref == 'refs/heads/master'
+        run: |
+          cd Messages/MacOS-11+/BlueBubblesHelper/build-output/
+          DYLIB_PATH=$(ls BlueBubblesHelper.dylib)
+          SHA=$(shasum -a 256 $DYLIB_PATH | awk '{print $1}')
+          TAG="v0.0.23-tahoe-ipv6"
+          gh release create $TAG \
+            --title "BlueBubbles Helper v0.0.23 Tahoe IPv6 Fix" \
+            --notes "macOS 26 Tahoe compatibility build. Fixes: IPv6 loopback connection. SHA-256: $SHA" \
+            $DYLIB_PATH
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
