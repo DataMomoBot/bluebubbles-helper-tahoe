@@ -19,10 +19,10 @@ jobs:
 
       - name: Build Dylib
         run: |
-          # xcodeproj is at Messages/MacOS-11+/ (parent of BlueBubblesHelper/)
           cd Messages/MacOS-11+
-          xcodebuild -project BlueBubblesHelper.xcodeproj \
-            -target "BlueBubblesHelper DyLib" \
+          # Use workspace (includes Pods) + scheme we added
+          xcodebuild -workspace BlueBubblesHelper.xcworkspace \
+            -scheme "BlueBubblesHelper DyLib" \
             -configuration Release \
             -sdk macosx \
             -arch arm64 \
