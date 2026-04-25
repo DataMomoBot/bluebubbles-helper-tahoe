@@ -41,20 +41,33 @@ static id sharedInstance = nil;
   })
 
 - (void)connect {
-    // we need to get the port to open the server on (to allow multiple users to use the bundle)
-    // we'll base this off the users uid (a unique id for each user, starting from 501)
-    // we'll subtract 501 to get an id starting at 0, incremented for each user
-    // then we add this to the base port to get a unique port for the socket
+    // Tahoe fix: BlueBubbles listens on IPv6 [::1]:45670. "localhost" can be flaky on newer macOS.
+    // Try ::1 first, then fall back to 127.0.0.1. Add extra logging for debugging.
     int port = CLAMP(45670 + getuid()-501, 45670, 65535);
-    DLog("BLUEBUBBLESHELPER: Connecting to socket on port %{public}d", port);
-    // connect to socket
-    asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
-    NSError *err = nil;
-    if (![asyncSocket connectToHost:@"localhost" onPort:port error:&err]) {
-        // If there was an error, it's likely something like "already connected" or "no delegate set"
-        DLog("BLUEBUBBLESHELPER: Error connecting to socket: %{public}@", err);
+    DLog("BLUEBUBBLESHELPER[Tahoe]: Connecting to socket on port %{public}d (macOS Tahoe build)", port);
+
+    if (asyncSocket != nil) {
+        [asyncSocket disconnect];
+        asyncSocket = nil;
     }
-    // initiate the 1st read request in anticipation
+
+    NSError *err = nil;
+    NSString *host = @"::1";
+    asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+
+    if (![asyncSocket connectToHost:host onPort:port error:&err]) {
+        DLog("BLUEBUBBLESHELPER[Tahoe]: Failed to connect to IPv6 ::1:%{public}d — %{public}@. Trying IPv4...", port, err);
+
+        asyncSocket = [[GCDAsyncSocket alloc] initWithDelegate:self delegateQueue:dispatch_get_main_queue()];
+        host = @"127.0.0.1";
+        err = nil;
+        if (![asyncSocket connectToHost:host onPort:port error:&err]) {
+            DLog("BLUEBUBBLESHELPER[Tahoe]: FAILED to connect to either IPv6 or IPv4 on port %{public}d: %{public}@", port, err);
+            return;
+        }
+    }
+
+    DLog("BLUEBUBBLESHELPER[Tahoe]: Successfully initiated connection to %{public}@:%{public}d", host, port);
     [asyncSocket readDataWithTimeout:(-1) tag:(1)];
 }
 

@@ -32,7 +32,13 @@ See [here](https://docs.bluebubbles.app/helper-bundle/imcore-documentation) for 
 
 ### Support
 
-The bundle has been tested on MacOS 10.13 (High Sierra) - MacOS 13 (Ventura). It could work on higher or lower MacOS versions, but we do not know for sure.
+The bundle has been tested on macOS 10.13 (High Sierra) - macOS 13 (Ventura). **macOS 26 Tahoe is now supported** via v0.0.23-tahoe-ipv6 (this fork).
+
+**Tahoe fixes included:**
+- Prefer IPv6 `::1` for socket connection to BlueBubbles Private API server (fixes connection failure on Tahoe where server binds to IPv6 loopback only)
+- Fallback to IPv4 `127.0.0.1`
+- Enhanced logging with [Tahoe] prefix for easier debugging
+- Based on v0.0.22-tahoe crash fix for IMMessageAcknowledgmentChatItem
 
 ### Build Yourself
 
